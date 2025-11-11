@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import {
   User,
   QrCode,
@@ -11,18 +11,22 @@ import {
   Globe,
   LogOut,
 } from 'lucide-react-native';
+import { tokens } from '@/constants/tokens';
+import { Text } from '@/components/ui/Text';
+import { Button } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
 
 export default function ProfileTab() {
   const profileMenuItems = [
     {
       icon: User,
       title: 'Мои данные',
-      color: '#5B21B6',
+      color: tokens.color.accentPurple,
     },
     {
       icon: QrCode,
       title: 'Мой QR',
-      color: '#5B21B6',
+      color: tokens.color.accentPurple,
     },
   ];
 
@@ -65,47 +69,78 @@ export default function ProfileTab() {
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <View style={styles.header}>
-        <Text style={styles.title}>Профиль</Text>
-        <Text style={styles.phone}>+994 50 519 99 91</Text>
+        <Text size="display" weight="bold" color="primary">
+          Профиль
+        </Text>
+        <Text size="lg" weight="semibold" color="primary" style={styles.phone}>
+          +994 50 519 99 91
+        </Text>
       </View>
 
       <View style={styles.profileGrid}>
         {profileMenuItems.map((item, index) => (
-          <TouchableOpacity key={index} style={styles.profileCard}>
+          <Card
+            key={index}
+            padding="lg"
+            style={styles.profileCard}
+            pressable
+            onPress={() => {}}
+          >
             <View
               style={[
                 styles.profileCardIcon,
                 { backgroundColor: item.color },
               ]}
             >
-              <item.icon color="#FFFFFF" size={24} />
+              <item.icon color={tokens.color.textInverse} size={tokens.iconSize.md} />
             </View>
-            <Text style={styles.profileCardTitle}>{item.title}</Text>
-          </TouchableOpacity>
+            <Text size="sm" weight="semibold" color="primary" align="center">
+              {item.title}
+            </Text>
+          </Card>
         ))}
       </View>
 
       <View style={styles.menuSection}>
         {menuItems.map((item, index) => (
-          <TouchableOpacity key={index} style={styles.menuItem}>
-            <item.icon color="#1F2937" size={24} />
+          <Card
+            key={index}
+            padding="md"
+            style={styles.menuItem}
+            pressable
+            onPress={() => {}}
+          >
+            <item.icon color={tokens.color.iconPrimary} size={tokens.iconSize.md} />
             <View style={styles.menuItemContent}>
-              <Text style={styles.menuItemTitle}>{item.title}</Text>
+              <Text size="md" weight="medium" color="primary">
+                {item.title}
+              </Text>
               {item.subtitle && (
-                <Text style={styles.menuItemSubtitle}>{item.subtitle}</Text>
+                <Text size="sm" color="secondary" style={styles.menuItemSubtitle}>
+                  {item.subtitle}
+                </Text>
               )}
             </View>
-            <Text style={styles.menuItemArrow}>›</Text>
-          </TouchableOpacity>
+            <Text size="xxl" color="secondary" style={styles.menuItemArrow}>
+              ›
+            </Text>
+          </Card>
         ))}
       </View>
 
-      <TouchableOpacity style={styles.logoutButton}>
-        <LogOut color="#EF4444" size={24} />
-        <Text style={styles.logoutText}>Выйти из m10</Text>
-      </TouchableOpacity>
+      <Button
+        variant="secondary"
+        fullWidth
+        leftIcon={<LogOut color={tokens.color.controlDestructive} size={tokens.iconSize.md} />}
+        style={styles.logoutButton}
+        onPress={() => {}}
+      >
+        <Text size="md" weight="medium" color="destructive">
+          Выйти из m10
+        </Text>
+      </Button>
 
-      <View style={{ height: 20 }} />
+      <View style={{ height: tokens.spacing.xl }} />
     </ScrollView>
   );
 }
@@ -113,95 +148,54 @@ export default function ProfileTab() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: tokens.color.surfaceTertiary,
   },
   header: {
-    paddingHorizontal: 20,
-    paddingTop: 16,
-    paddingBottom: 24,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#1F2937',
-    marginBottom: 8,
+    paddingHorizontal: tokens.spacing.lg,
+    paddingTop: tokens.spacing.lg,
+    paddingBottom: tokens.spacing.xl,
   },
   phone: {
-    fontSize: 16,
-    color: '#1F2937',
-    fontWeight: '600',
+    marginTop: tokens.spacing.sm,
   },
   profileGrid: {
     flexDirection: 'row',
-    gap: 12,
-    paddingHorizontal: 16,
-    marginBottom: 20,
+    gap: tokens.spacing.md,
+    paddingHorizontal: tokens.spacing.lg,
+    marginBottom: tokens.spacing.xl,
   },
   profileCard: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 16,
     alignItems: 'center',
   },
   profileCardIcon: {
     width: 48,
     height: 48,
-    borderRadius: 24,
+    borderRadius: tokens.borderRadius.round,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 12,
-  },
-  profileCardTitle: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#1F2937',
-    textAlign: 'center',
+    marginBottom: tokens.spacing.md,
   },
   menuSection: {
-    paddingHorizontal: 16,
+    paddingHorizontal: tokens.spacing.lg,
   },
   menuItem: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    paddingVertical: 14,
-    paddingHorizontal: 14,
-    marginBottom: 8,
     flexDirection: 'row',
     alignItems: 'center',
+    marginBottom: tokens.spacing.sm,
   },
   menuItemContent: {
     flex: 1,
-    marginLeft: 12,
-  },
-  menuItemTitle: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#1F2937',
+    marginLeft: tokens.spacing.md,
   },
   menuItemSubtitle: {
-    fontSize: 12,
-    color: '#9CA3AF',
     marginTop: 2,
   },
   menuItemArrow: {
-    fontSize: 20,
-    color: '#9CA3AF',
+    lineHeight: tokens.fontSize.xxl,
   },
   logoutButton: {
-    marginHorizontal: 16,
-    marginTop: 16,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    paddingVertical: 14,
-    paddingHorizontal: 14,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  logoutText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#EF4444',
-    marginLeft: 12,
+    marginHorizontal: tokens.spacing.lg,
+    marginTop: tokens.spacing.lg,
   },
 });

@@ -1,5 +1,9 @@
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, SectionList } from 'react-native';
-import { Search } from 'lucide-react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { Search, Flame } from 'lucide-react-native';
+import { Text } from '@/components/ui/Text';
+import { Card } from '@/components/ui/Card';
+import { Badge } from '@/components/ui/Badge';
+import { tokens } from '@/constants/tokens';
 
 export default function PaymentsTab() {
   const payments = [
@@ -31,8 +35,10 @@ export default function PaymentsTab() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Сервисы</Text>
-        <Search color="#1F2937" size={24} />
+        <Text size="display" weight="bold" color="primary">
+          Сервисы
+        </Text>
+        <Search color={tokens.color.iconPrimary} size={tokens.iconSize.md} />
       </View>
 
       <View style={styles.servicesGrid}>
@@ -48,9 +54,13 @@ export default function PaymentsTab() {
 
       <View style={styles.paymentsSection}>
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Мои платежи</Text>
+          <Text size="lg" weight="bold" color="primary">
+            Мои платежи
+          </Text>
           <TouchableOpacity>
-            <Text style={styles.viewAll}>Все ></Text>
+            <Text size="md" color="secondary">
+              Все &gt;
+            </Text>
           </TouchableOpacity>
         </View>
 
@@ -60,15 +70,24 @@ export default function PaymentsTab() {
           style={styles.paymentsScroll}
         >
           {payments.map((payment) => (
-            <TouchableOpacity key={payment.id} style={styles.paymentCard}>
+            <Card
+              key={payment.id}
+              pressable
+              padding="md"
+              style={styles.paymentCard}
+            >
               <View style={styles.paymentCardContent}>
-                <Text style={styles.paymentIcon}>{payment.icon}</Text>
-                <Text style={styles.paymentName}>{payment.name}</Text>
+                <Text size="xxxl">{payment.icon}</Text>
+                <Text size="sm" weight="semibold" color="primary" align="center">
+                  {payment.name}
+                </Text>
                 {payment.number && (
-                  <Text style={styles.paymentNumber}>{payment.number}</Text>
+                  <Text size="xs" color="secondary">
+                    {payment.number}
+                  </Text>
                 )}
               </View>
-            </TouchableOpacity>
+            </Card>
           ))}
         </ScrollView>
       </View>
@@ -76,26 +95,39 @@ export default function PaymentsTab() {
       <ScrollView style={styles.servicesContent} showsVerticalScrollIndicator={false}>
         {sections.map((section, index) => (
           <View key={index}>
-            <Text style={styles.categoryTitle}>{section.title}</Text>
+            <Text
+              size="sm"
+              weight="semibold"
+              color="secondary"
+              style={styles.categoryTitle}
+            >
+              {section.title.toUpperCase()}
+            </Text>
             {section.data.map((item, itemIndex) => (
-              <TouchableOpacity
+              <Card
                 key={itemIndex}
+                pressable
+                padding="md"
                 style={styles.serviceItem}
               >
-                {item.icon && <Text style={styles.itemIcon}>{item.icon}</Text>}
+                {item.icon && <Text size="xl" style={styles.itemIcon}>{item.icon}</Text>}
                 <View style={styles.itemContent}>
-                  <Text style={styles.itemTitle}>{item.text}</Text>
+                  <Text size="md" weight="medium" color="primary">
+                    {item.text}
+                  </Text>
                 </View>
                 {item.cashback && (
-                  <View style={styles.cashbackBadge}>
-                    <Text style={styles.cashbackText}>{item.cashback}</Text>
-                  </View>
+                  <Badge
+                    text={item.cashback}
+                    variant="blue"
+                    icon={<Flame color={tokens.color.textInverse} size={14} />}
+                  />
                 )}
-              </TouchableOpacity>
+              </Card>
             ))}
           </View>
         ))}
-        <View style={{ height: 20 }} />
+        <View style={styles.bottomSpacing} />
       </ScrollView>
     </View>
   );
@@ -111,101 +143,70 @@ function ServiceGridItem({
   isNew?: boolean;
 }) {
   return (
-    <TouchableOpacity style={styles.gridItem}>
-      {isNew && <View style={styles.newBadge}>
-        <Text style={styles.newBadgeText}>Новинка</Text>
-      </View>}
-      <Text style={styles.gridIcon}>{icon}</Text>
-      <Text style={styles.gridTitle}>{title}</Text>
-    </TouchableOpacity>
+    <Card pressable padding="lg" style={styles.gridItem}>
+      {isNew && (
+        <Badge text="Новинка" variant="green" style={styles.gridBadge} />
+      )}
+      <Text size="display" style={styles.gridIcon}>
+        {icon}
+      </Text>
+      <Text size="lg" weight="semibold" color="primary">
+        {title}
+      </Text>
+    </Card>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: tokens.color.surfaceTertiary,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    paddingTop: 16,
-    paddingBottom: 16,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#1F2937',
+    paddingHorizontal: tokens.spacing.xl,
+    paddingTop: tokens.spacing.lg,
+    paddingBottom: tokens.spacing.lg,
   },
   servicesGrid: {
-    paddingHorizontal: 16,
-    marginBottom: 20,
+    paddingHorizontal: tokens.spacing.lg,
+    marginBottom: tokens.spacing.xl,
   },
   gridRow: {
     flexDirection: 'row',
-    gap: 12,
+    gap: tokens.spacing.md,
   },
   gridItem: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 16,
     height: 140,
     justifyContent: 'space-between',
   },
-  newBadge: {
-    backgroundColor: '#10B981',
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    paddingVertical: 4,
+  gridBadge: {
     alignSelf: 'flex-start',
-    marginBottom: 8,
-  },
-  newBadgeText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#FFFFFF',
+    marginBottom: tokens.spacing.sm,
   },
   gridIcon: {
-    fontSize: 32,
-    marginVertical: 8,
-  },
-  gridTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#1F2937',
+    marginVertical: tokens.spacing.sm,
   },
   paymentsSection: {
-    marginBottom: 20,
+    marginBottom: tokens.spacing.xl,
   },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 20,
-    marginBottom: 12,
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#1F2937',
-  },
-  viewAll: {
-    fontSize: 14,
-    color: '#9CA3AF',
+    paddingHorizontal: tokens.spacing.xl,
+    marginBottom: tokens.spacing.md,
   },
   paymentsScroll: {
-    paddingHorizontal: 16,
+    paddingHorizontal: tokens.spacing.lg,
   },
   paymentCard: {
     width: 100,
     height: 120,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 12,
-    marginRight: 12,
+    marginRight: tokens.spacing.md,
     justifyContent: 'space-between',
     alignItems: 'center',
   },
@@ -215,60 +216,25 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     flex: 1,
   },
-  paymentIcon: {
-    fontSize: 24,
-  },
-  paymentName: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#1F2937',
-    textAlign: 'center',
-  },
-  paymentNumber: {
-    fontSize: 11,
-    color: '#9CA3AF',
-  },
   servicesContent: {
-    paddingHorizontal: 16,
+    paddingHorizontal: tokens.spacing.lg,
   },
   categoryTitle: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#9CA3AF',
-    textTransform: 'uppercase',
-    marginTop: 16,
-    marginBottom: 8,
+    marginTop: tokens.spacing.lg,
+    marginBottom: tokens.spacing.sm,
   },
   serviceItem: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    paddingVertical: 14,
-    paddingHorizontal: 14,
-    marginBottom: 8,
+    marginBottom: tokens.spacing.sm,
     flexDirection: 'row',
     alignItems: 'center',
   },
   itemIcon: {
-    fontSize: 20,
-    marginRight: 12,
+    marginRight: tokens.spacing.md,
   },
   itemContent: {
     flex: 1,
   },
-  itemTitle: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#1F2937',
-  },
-  cashbackBadge: {
-    backgroundColor: '#3B82F6',
-    borderRadius: 12,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-  },
-  cashbackText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#FFFFFF',
+  bottomSpacing: {
+    height: tokens.spacing.xl,
   },
 });

@@ -1,40 +1,47 @@
-import { View, Text, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
+import { Text } from '@/components/ui/Text';
+import { Card } from '@/components/ui/Card';
+import { tokens } from '@/constants/tokens';
 
 export default function QrTab() {
   return (
     <View style={styles.container}>
       <View style={styles.content}>
-        <Text style={styles.title}>Мой QR</Text>
+        <Text size="display" weight="bold" style={styles.title}>
+          Мой QR
+        </Text>
 
-        <View style={styles.qrContainer}>
+        <Card variant="elevated" padding="xxl" style={styles.qrContainer}>
           <View style={styles.qrWrapper}>
             <QRCode
               value="m10://wallet/user123"
               size={200}
-              color="#1F2937"
-              backgroundColor="#FFFFFF"
+              color={tokens.color.textPrimary}
+              backgroundColor={tokens.color.surfacePrimary}
               quietZone={10}
             />
           </View>
-        </View>
+        </Card>
 
-        <Text style={styles.description}>
+        <Text size="md" color="secondary" align="center" style={styles.description}>
           Поделитесь этим QR-кодом для получения платежей
         </Text>
 
-        <View style={styles.info}>
-          <Text style={styles.infoTitle}>Как использовать</Text>
-          <Text style={styles.infoText}>
+        <Card variant="default" padding="lg" style={styles.info}>
+          <Text size="lg" weight="semibold" style={styles.infoTitle}>
+            Как использовать
+          </Text>
+          <Text size="sm" color="secondary" style={styles.infoText}>
             1. Покажите QR-код другому пользователю
           </Text>
-          <Text style={styles.infoText}>
+          <Text size="sm" color="secondary" style={styles.infoText}>
             2. Они смогут отправить вам платеж, отсканировав код
           </Text>
-          <Text style={styles.infoText}>
+          <Text size="sm" color="secondary" style={styles.infoText}>
             3. Платеж поступит на ваш счет автоматически
           </Text>
-        </View>
+        </Card>
       </View>
     </View>
   );
@@ -43,61 +50,39 @@ export default function QrTab() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F3F4F6',
+    backgroundColor: tokens.color.surfaceTertiary,
   },
   content: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 20,
+    paddingHorizontal: tokens.spacing.xl,
   },
   title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#1F2937',
-    marginBottom: 40,
+    marginBottom: tokens.spacing.xxxl,
     alignSelf: 'flex-start',
   },
   qrContainer: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    padding: 30,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 30,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
+    marginBottom: tokens.spacing.xxl,
   },
   qrWrapper: {
-    padding: 10,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
+    padding: tokens.spacing.md,
+    backgroundColor: tokens.color.surfacePrimary,
+    borderRadius: tokens.borderRadius.md,
   },
   description: {
-    fontSize: 14,
-    color: '#6B7280',
-    textAlign: 'center',
-    marginBottom: 30,
+    marginBottom: tokens.spacing.xxl,
   },
   info: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 16,
     width: '100%',
   },
   infoTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#1F2937',
-    marginBottom: 12,
+    marginBottom: tokens.spacing.md,
   },
   infoText: {
-    fontSize: 13,
-    color: '#4B5563',
-    marginBottom: 8,
-    lineHeight: 18,
+    marginBottom: tokens.spacing.sm,
+    lineHeight: tokens.fontSize.sm * tokens.lineHeight.normal,
   },
 });
