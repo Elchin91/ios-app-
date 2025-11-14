@@ -42,31 +42,46 @@ jobs:
         with:
           xcode-version: latest-stable
 
-      - name: List available schemes
+      - name: List available schemes and destinations
         run: |
+          echo "=== Available Schemes ==="
           xcodebuild -list -workspace ios/M10Wallet.xcworkspace || xcodebuild -list -project ios/M10Wallet.xcodeproj
+          echo ""
+          echo "=== Available Destinations ==="
+          xcodebuild -showdestinations -workspace ios/M10Wallet.xcworkspace -scheme M10Wallet || true
+
+      - name: Clean build folder
+        run: |
+          mkdir -p ${{ github.workspace }}/build
+          xcodebuild clean \
+            -workspace ios/M10Wallet.xcworkspace \
+            -scheme M10Wallet \
+            -configuration Release \
+            -destination "generic/platform=iOS" || \
+          xcodebuild clean \
+            -workspace ios/M10Wallet.xcworkspace \
+            -scheme M10Wallet \
+            -configuration Release
 
       - name: Build Archive
         run: |
           mkdir -p ${{ github.workspace }}/build
-          xcodebuild clean archive \
+          xcodebuild archive \
             -workspace ios/M10Wallet.xcworkspace \
             -scheme M10Wallet \
             -configuration Release \
-            -sdk iphoneos \
+            -destination "generic/platform=iOS" \
             -archivePath ${{ github.workspace }}/build/M10Wallet.xcarchive \
             CODE_SIGN_IDENTITY="-" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
-            PROVISIONING_PROFILE_SPECIFIER="" \
-            -allowProvisioningUpdates || \
-          xcodebuild clean archive \
+            PROVISIONING_PROFILE_SPECIFIER="" || \
+          xcodebuild archive \
             -workspace ios/M10Wallet.xcworkspace \
             -scheme M10Wallet \
             -configuration Release \
-            -sdk iphoneos \
-            -archivePath ${{ github.workspace }}/build/M10Wallet.xcarchive \
-            -allowProvisioningUpdates
+            -destination "generic/platform=iOS" \
+            -archivePath ${{ github.workspace }}/build/M10Wallet.xcarchive
 
       - name: Export IPA
         run: |
