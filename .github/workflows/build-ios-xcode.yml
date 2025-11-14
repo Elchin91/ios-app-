@@ -48,7 +48,6 @@ jobs:
 
       - name: Build Archive
         run: |
-          set -e
           mkdir -p ${{ github.workspace }}/build
           
           # Пробуем найти доступную версию iOS SDK
@@ -65,36 +64,70 @@ jobs:
           fi
           
           echo "🔨 Начинаем сборку архива..."
-          # Собираем архив с подробным выводом
+          echo "Пробуем с destination generic/platform=iOS..."
+          
+          # Пробуем разные варианты destination
+          ARCHIVE_SUCCESS=false
+          
+          # Вариант 1: с generic/platform=iOS
           if xcodebuild archive \
             -workspace ios/M10Wallet.xcworkspace \
             -scheme M10Wallet \
             -configuration Release \
             $SDK_ARG \
+            -destination "generic/platform=iOS" \
             -archivePath ${{ github.workspace }}/build/M10Wallet.xcarchive \
             CODE_SIGN_IDENTITY="-" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
-            PROVISIONING_PROFILE_SPECIFIER="" \
-            2>&1 | tee build.log; then
-            echo "✅ Архив успешно создан"
+            PROVISIONING_PROFILE_SPECIFIER="" 2>&1; then
+            ARCHIVE_SUCCESS=true
+            echo "✅ Архив успешно создан (вариант 1)"
           else
-            echo "❌ Первая попытка не удалась, пробуем без явного SDK..."
-            cat build.log || true
-            xcodebuild archive \
+            echo "⚠️ Вариант 1 не удался, пробуем вариант 2..."
+            
+            # Вариант 2: без destination, но с указанием SDK
+            if xcodebuild archive \
               -workspace ios/M10Wallet.xcworkspace \
               -scheme M10Wallet \
               -configuration Release \
+              $SDK_ARG \
               -archivePath ${{ github.workspace }}/build/M10Wallet.xcarchive \
               CODE_SIGN_IDENTITY="-" \
               CODE_SIGNING_REQUIRED=NO \
-              CODE_SIGNING_ALLOWED=NO || \
-            (echo "❌ Все попытки сборки не удались" && exit 1)
+              CODE_SIGNING_ALLOWED=NO 2>&1; then
+              ARCHIVE_SUCCESS=true
+              echo "✅ Архив успешно создан (вариант 2)"
+            else
+              echo "⚠️ Вариант 2 не удался, пробуем вариант 3 (build вместо archive)..."
+              
+              # Вариант 3: используем build вместо archive
+              xcodebuild build \
+                -workspace ios/M10Wallet.xcworkspace \
+                -scheme M10Wallet \
+                -configuration Release \
+                $SDK_ARG \
+                -destination "generic/platform=iOS" \
+                CODE_SIGN_IDENTITY="-" \
+                CODE_SIGNING_REQUIRED=NO \
+                CODE_SIGNING_ALLOWED=NO
+              
+              # Создаем архив вручную из build продукта
+              BUILD_DIR="ios/build/Release-iphoneos"
+              if [ -d "$BUILD_DIR/M10Wallet.app" ]; then
+                mkdir -p ${{ github.workspace }}/build/M10Wallet.xcarchive/Products/Applications
+                cp -r "$BUILD_DIR/M10Wallet.app" ${{ github.workspace }}/build/M10Wallet.xcarchive/Products/Applications/
+                ARCHIVE_SUCCESS=true
+                echo "✅ Архив создан вручную из build продукта"
+              fi
+            fi
           fi
           
           # Проверяем, что архив создан
-          if [ ! -d "${{ github.workspace }}/build/M10Wallet.xcarchive" ]; then
+          if [ "$ARCHIVE_SUCCESS" = false ] || [ ! -d "${{ github.workspace }}/build/M10Wallet.xcarchive" ]; then
             echo "❌ Архив не был создан!"
+            echo "Содержимое build директории:"
+            ls -la ${{ github.workspace }}/build/ || true
             exit 1
           fi
           echo "✅ Архив найден: ${{ github.workspace }}/build/M10Wallet.xcarchive"
