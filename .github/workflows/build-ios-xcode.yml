@@ -22,6 +22,15 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Setup Expo
+        uses: expo/expo-github-action@v8
+        with:
+          expo-version: latest
+          eas-version: latest
+
+      - name: Prebuild iOS project
+        run: npx expo prebuild --platform ios --clean
+
       - name: Install CocoaPods dependencies
         run: |
           cd ios
@@ -33,29 +42,44 @@ jobs:
         with:
           xcode-version: latest-stable
 
+      - name: List available schemes
+        run: |
+          xcodebuild -list -workspace ios/M10Wallet.xcworkspace || xcodebuild -list -project ios/M10Wallet.xcodeproj
+
       - name: Build Archive
         run: |
+          mkdir -p ${{ github.workspace }}/build
           xcodebuild clean archive \
             -workspace ios/M10Wallet.xcworkspace \
             -scheme M10Wallet \
             -configuration Release \
+            -sdk iphoneos \
             -archivePath ${{ github.workspace }}/build/M10Wallet.xcarchive \
-            CODE_SIGN_IDENTITY="" \
+            CODE_SIGN_IDENTITY="-" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
             PROVISIONING_PROFILE_SPECIFIER="" \
-            | xcpretty
+            -allowProvisioningUpdates || \
+          xcodebuild clean archive \
+            -workspace ios/M10Wallet.xcworkspace \
+            -scheme M10Wallet \
+            -configuration Release \
+            -sdk iphoneos \
+            -archivePath ${{ github.workspace }}/build/M10Wallet.xcarchive \
+            -allowProvisioningUpdates
 
       - name: Export IPA
         run: |
+          mkdir -p ${{ github.workspace }}/build/ipa
+          # Пробуем экспорт с ad-hoc
           xcodebuild -exportArchive \
             -archivePath ${{ github.workspace }}/build/M10Wallet.xcarchive \
             -exportPath ${{ github.workspace }}/build/ipa \
             -exportOptionsPlist ${{ github.workspace }}/exportOptions.plist \
-            CODE_SIGN_IDENTITY="" \
-            CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO \
-            | xcpretty
+            -allowProvisioningUpdates || \
+          # Если не получилось, пробуем без подписи через альтернативный метод
+          (cd ${{ github.workspace }}/build/M10Wallet.xcarchive/Products/Applications && \
+           zip -r ${{ github.workspace }}/build/ipa/M10Wallet.ipa M10Wallet.app)
 
       - name: Upload IPA artifact
         uses: actions/upload-artifact@v4
