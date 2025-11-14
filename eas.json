@@ -14,24 +14,20 @@
       "distribution": "internal",
       "ios": {
         "simulator": false,
-        "buildConfiguration": "Release",
-        "bundleIdentifier": "com.m10.wallet.app"
+        "buildConfiguration": "Release"
       }
     },
     "production": {
       "ios": {
         "simulator": false,
-        "buildConfiguration": "Release",
-        "bundleIdentifier": "com.m10.wallet.app"
+        "buildConfiguration": "Release"
       }
     },
     "trollstore": {
       "distribution": "internal",
       "ios": {
         "simulator": false,
-        "buildConfiguration": "Release",
-        "bundleIdentifier": "com.m10.wallet.app",
-        "enterpriseProvisioning": "universal"
+        "buildConfiguration": "Release"
       }
     }
   },
