@@ -24,9 +24,8 @@
       }
     },
     "trollstore": {
-      "distribution": "internal",
       "ios": {
-        "simulator": false,
+        "simulator": true,
         "buildConfiguration": "Release"
       }
     }

@@ -2,7 +2,6 @@
   "expo": {
     "name": "M10 Wallet",
     "slug": "m10-wallet",
-    "owner": "elchin91",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -32,9 +31,11 @@
       "typedRoutes": true
     },
     "extra": {
+      "router": {},
       "eas": {
-        "projectId": "d8e390fb-6ebb-48a4-a750-251bd16232fc"
+        "projectId": "812188bb-a216-4d0b-aadf-488532c87fd5"
       }
-    }
+    },
+    "owner": "elchin.abb"
   }
 }
