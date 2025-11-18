@@ -34,13 +34,20 @@ jobs:
           rm -rf .expo || true
         continue-on-error: true
 
-      - name: Initialize EAS project
+      - name: Configure EAS project
         run: |
-          echo "Initializing EAS project..."
-          eas init --id $(uuidgen) --non-interactive || echo "Project may already be initialized"
+          echo "Configuring EAS project..."
+          # Generate a unique project ID if not exists
+          PROJECT_ID=$(cat app.json | jq -r '.expo.extra.eas.projectId // empty')
+          if [ -z "$PROJECT_ID" ]; then
+            PROJECT_ID=$(uuidgen | tr '[:upper:]' '[:lower:]')
+            echo "Generated project ID: $PROJECT_ID"
+            # Add projectId to app.json
+            jq --arg id "$PROJECT_ID" '.expo.extra.eas.projectId = $id' app.json > app.json.tmp && mv app.json.tmp app.json
+          fi
+          cat app.json
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-        continue-on-error: true
 
       - name: Build IPA (with retry)
         id: build
