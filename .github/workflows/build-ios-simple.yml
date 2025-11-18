@@ -34,6 +34,14 @@ jobs:
           rm -rf .expo || true
         continue-on-error: true
 
+      - name: Initialize EAS project
+        run: |
+          echo "Initializing EAS project..."
+          eas init --id $(uuidgen) --non-interactive || echo "Project may already be initialized"
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        continue-on-error: true
+
       - name: Build IPA (with retry)
         id: build
         run: |

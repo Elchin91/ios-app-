@@ -2,6 +2,7 @@
   "expo": {
     "name": "M10 Wallet",
     "slug": "m10-wallet",
+    "owner": "elchin91",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
